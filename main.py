@@ -5,12 +5,22 @@ from config import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
-params = {'q': 'Moscow', 'appid': API_KEY, 'units': 'metric'}
+params = {'q': 'Los Angeles', 'appid': API_KEY, 'units': 'metric'}
 
 
-def get_weather(params):
-    answ = requests.get(ENDPOINT, params=params)
-    print(answ)
+def get_weather(params: dict) -> dict:
+    """
+    get_weather return weather info from API
+
+    Args:
+        params (dict): contains request parameters(API, region)
+
+    Returns:
+        dict: contains weather info
+    """
+
+    answ = requests.get(ENDPOINT, params=params)  # get response
+
     if answ:
         data = answ.json()
         data['main']['temp'] = round(data['main']['temp'])
@@ -24,10 +34,13 @@ def get_weather(params):
 
 @app.route('/', methods=["POST", "GET"])
 def index():
+    """index func to address main page"""
+
     if request.method == 'POST':
         params['q'] = request.form['city']  # для вызова след requests
         return redirect(url_for('index'))
 
+    # Get weather info
     return render_template('index.html', data=get_weather(params))
 
 
