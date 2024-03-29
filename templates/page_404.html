@@ -11,12 +11,15 @@
 
 <body>
     <div class="mainContainer">
+        <form action='{{ url_for('index') }}' method='post' class="searchInput">
+            <input type="text" name='city' placeholder="Enter City Name" id="searchInput" value=""/>
+            <button id="searchButton" type='submit'><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
         <div class="weatherDetails">
             <div class="weatherIcon">
                 <img src="/static/img/cloud_sad.png" alt="Clouds" id="weatherIcon">
             </div>
             <div class="cityDetails">
-                <div class="weather" id="weather"></div>
                 <div class="desc">Ошибка :(</div>
             </div>
         </div>

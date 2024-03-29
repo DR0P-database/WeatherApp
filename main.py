@@ -8,29 +8,14 @@ app.config['SECRET_KEY'] = SECRET_KEY
 params = {'q': 'Moscow', 'appid': API_KEY, 'units': 'metric'}
 
 
-def select_icon(clouds):
-    match (clouds):
-        case 'Clouds':
-            return "static/img/clouds.png"
-        case 'Clear':
-            return "static/img/sun.png"
-        case 'Rain':
-            return "static/img/rainy.png"
-        case 'Mist':
-            return "static/img/mist.png"
-        case 'Snow':
-            return "static/img/snow.png"
-        case 'Haze':
-            return "static/img/haze.png"
-        case _:
-            return "static/img/sun.png"
-
-
 def get_weather(params):
     answ = requests.get(ENDPOINT, params=params)
+    print(answ)
     if answ:
         data = answ.json()
-        data["weather"][0]['icon'] = select_icon(data["weather"][0]['main'])
+        data['main']['temp'] = round(data['main']['temp'])
+        data["weather"][0][
+            'icon'] = f"https://openweathermap.org/img/wn/{data['weather'][0]['icon']}@2x.png"
         return data
 
     flash('Bad request', 'error')
@@ -41,7 +26,7 @@ def get_weather(params):
 def index():
     if request.method == 'POST':
         params['q'] = request.form['city']  # для вызова след requests
-        return redirect(url_for('index', data=get_weather(params)))
+        return redirect(url_for('index'))
 
     return render_template('index.html', data=get_weather(params))
 
