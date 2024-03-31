@@ -1,11 +1,30 @@
-from flask import Flask, render_template, request, redirect, url_for, abort, flash
+from flask import Flask, render_template, request, redirect, url_for, abort, flash, session
 import flask
 import requests
 from config import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
-params = {'q': 'Los Angeles', 'appid': API_KEY, 'units': 'metric'}
+params = {'appid': API_KEY, 'units': 'metric'}
+app.permanent_session_lifetime = 20
+
+appHasRunBefore: bool = False
+
+
+@app.before_request
+def before_first_request():
+    global appHasRunBefore
+    global params
+
+    session.permanent = True
+    if not appHasRunBefore:
+        if 'my_city' not in session:
+            session['my_city'] = 'Los Angeles'
+            session.modified = True
+
+        params.update({'q': session['my_city']})
+        appHasRunBefore = True
+        print("[DECORATOR]", params['q'])
 
 
 def get_weather(params: dict) -> dict:
@@ -37,7 +56,10 @@ def index():
     """index func to address main page"""
 
     if request.method == 'POST':
-        params['q'] = request.form['city']  # для вызова след requests
+        # для вызова след requests as (params['q'] = request.form['city'])
+        session['my_city'] = request.form['city']
+        session.modified = True
+        params.update({'q': session['my_city']})
         return redirect(url_for('index'))
 
     # Get weather info
