@@ -6,8 +6,7 @@ from config import *
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
 params = {'appid': API_KEY, 'units': 'metric'}
-app.permanent_session_lifetime = 20
-
+app.permanent_session_lifetime = 3600*24*31
 appHasRunBefore: bool = False
 
 
